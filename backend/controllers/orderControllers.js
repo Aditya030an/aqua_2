@@ -63,18 +63,16 @@
 // };
 
 import crypto from "crypto";
-import Razorpay from "razorpay";
+import razorpay from "../config/razorpay.js";
 import Order from "../models/orderModels.js";
 import userModel from "../models/userModels.js";
 import axios from "axios";
 import { getShiprocketToken } from "../config/shiprocket.js";
 import { sendAdminNotification } from "../utils/sendEmail.js";
 
-// ✅ INIT RAZORPAY
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY,
-  key_secret: process.env.RAZORPAY_SECRET,
-});
+// ✅ RAZORPAY — shared lazily-initialised client (see config/razorpay.js).
+// Constructing it here at module scope crashed the serverless function on
+// import whenever RAZORPAY_KEY was unset.
 
 // ✅ CREATE ORDER
 export const createOrder = async (req, res) => {

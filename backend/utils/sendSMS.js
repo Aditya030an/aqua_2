@@ -4,10 +4,27 @@ dotenv.config();
 
 import twilio from "twilio";
 
-const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+// twilio() throws when the account SID is missing or malformed. Building the
+// client at module scope meant an unset TWILIO_SID crashed the whole serverless
+// function on import, not just SMS. Construct it on first use instead.
+let client = null;
+
+const getClient = () => {
+    if (!process.env.TWILIO_SID || !process.env.TWILIO_AUTH_TOKEN) {
+        throw new Error(
+            "Twilio is not configured — set TWILIO_SID and TWILIO_AUTH_TOKEN"
+        );
+    }
+
+    if (!client) {
+        client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+    }
+
+    return client;
+};
 
 const sendSMS = async (phone, otp) => {
-    await client.messages.create({
+    await getClient().messages.create({
         body: `Your OTP is: ${otp}`,
         from: process.env.TWILIO_PHONE,
         to: phone
@@ -15,4 +32,3 @@ const sendSMS = async (phone, otp) => {
 };
 
 export default sendSMS;
-
