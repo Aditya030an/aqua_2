@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+
+# env / secrets — NEVER commit these
+.env
+.env.*
+*.pem
+
+# logs
+npm-debug.log*
+logs/
+*.log
+
+# os / editor
+.DS_Store
+.vscode/
+.idea/

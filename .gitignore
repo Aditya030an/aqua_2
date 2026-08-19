@@ -1,0 +1,21 @@
+# OS / editor junk
+.DS_Store
+**/.DS_Store
+.vscode/
+.idea/
+
+# dependencies
+node_modules/
+**/node_modules/
+
+# env / secrets — NEVER commit
+.env
+**/.env
+**/.env.*
+
+# builds
+**/dist/
+
+# large media (host on Cloudinary/CDN, not git)
+*.MOV
+*.MP4
