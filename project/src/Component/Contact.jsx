@@ -3,12 +3,10 @@ import { FaEnvelope, FaInstagram, FaYoutube } from "react-icons/fa";
 import { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_APP_API_URL || "http://localhost:8080";
 
 export default function ContactPage() {
-  const navigate = useNavigate();
   const storedUser = JSON.parse(localStorage.getItem("aqua_user") || "null");
 
   const [form, setForm] = useState({
@@ -26,11 +24,9 @@ export default function ContactPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // No login required to send an enquiry — a token is sent only if the
+    // visitor happens to already be signed in, so it gets linked to them.
     const token = localStorage.getItem("aqua_token");
-    if (!token) {
-      toast.error("Please log in to send a request");
-      return navigate("/login");
-    }
 
     if (!form.name || !form.phone || !form.problem) {
       toast.error("Please fill name, phone and your problem");
@@ -50,7 +46,7 @@ export default function ContactPage() {
             ? `${form.problem}\n\nDuration: ${form.duration}`
             : form.problem,
         },
-        { headers: { Authorization: `Bearer ${token}` } }
+        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
       );
 
       if (data.success) {
